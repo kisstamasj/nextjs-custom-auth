@@ -1,7 +1,11 @@
 "use server";
 
 import { NextRequest, NextResponse } from "next/server";
-import { DEFAULT_LOGIN_REDIRECT, authRoutes } from "./routes-rules";
+import {
+  DEFAULT_LOGIN_REDIRECT,
+  DEFAULT_LOGOUT_REDIRECT,
+  authRoutes,
+} from "./routes-rules";
 import axiosInstance from "./axios";
 import { cookies } from "next/headers";
 import { AuthSchemaType } from "@/schemas/auth";
@@ -113,7 +117,7 @@ export async function authorized(request: NextRequest) {
   const isAuthRoute = authRoutes.includes(pathName);
 
   if (!loggedIn && !isAuthRoute) {
-    return NextResponse.redirect(new URL("/auth/signin", request.url));
+    return NextResponse.redirect(new URL(DEFAULT_LOGOUT_REDIRECT, request.url));
   }
 
   if (loggedIn && isAuthRoute) {

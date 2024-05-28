@@ -6,7 +6,7 @@ import {
   DEFAULT_LOGOUT_REDIRECT,
   authRoutes,
 } from "./routes-rules";
-import axiosInstance from "./axios";
+import api from "./axios";
 import { cookies } from "next/headers";
 import { AuthSchemaType } from "@/schemas/auth";
 import { AxiosError } from "axios";
@@ -37,7 +37,7 @@ export interface SignInResponse {
 
 export async function getProfile() {
   try {
-    const { data } = await axiosInstance.get<Profile>("/users/profile");
+    const { data } = await api.get<Profile>("/users/profile");
     return data;
   } catch (error) {
     return null;
@@ -82,7 +82,7 @@ export async function signInAction(
 ) {
   try {
     const { email, password } = authSchema;
-    const { data } = await axiosInstance.post<SignInResponse>(
+    const { data } = await api.post<SignInResponse>(
       "/auth/signin",
       {
         email,
@@ -106,7 +106,7 @@ export async function signInAction(
 }
 
 export async function signOutAction() {
-  await axiosInstance.get("/auth/logout");
+  await api.get("/auth/logout");
   await removeToken();
 }
 

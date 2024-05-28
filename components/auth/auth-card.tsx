@@ -26,7 +26,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { DEFAULT_LOGIN_REDIRECT } from "@/lib/routes-rules";
-import { signInAction } from "@/lib/auth";
+import { signInWithCredentials } from "@/lib/auth";
 
 export default function AuthCard() {
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function AuthCard() {
 
   const onSubmit = async (data: AuthSchemaType) => {
     startTransition(async () => {
-      await signInAction(data, JSON.stringify(parser.getResult()));
+      await signInWithCredentials(data, JSON.stringify(parser.getResult()));
 
       router.push(DEFAULT_LOGIN_REDIRECT);
     });

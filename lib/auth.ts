@@ -76,7 +76,7 @@ export async function getTokens() {
   return { accessToken, refreshToken };
 }
 
-export async function signInAction(
+export async function signInWithCredentials(
   authSchema: AuthSchemaType,
   userAgent: string
 ) {

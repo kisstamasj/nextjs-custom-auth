@@ -106,7 +106,10 @@ export async function signInWithCredentials(
 }
 
 export async function signOutAction() {
-  await api.get("/auth/logout");
+  try {
+    await api.get("/auth/logout");
+  } catch (error) {}
+
   await removeToken();
 }
 

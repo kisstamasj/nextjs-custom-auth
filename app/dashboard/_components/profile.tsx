@@ -5,7 +5,7 @@ import { signOutAction } from "@/lib/auth";
 import { DEFAULT_LOGOUT_REDIRECT } from "@/lib/routes-rules";
 import { Loader, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useTransition } from "react";
+import { useTransition } from "react";
 
 function Profile() {
   const router = useRouter();
@@ -16,8 +16,13 @@ function Profile() {
       router.push(DEFAULT_LOGOUT_REDIRECT);
     });
   };
+
+  const handleRefresh = async () => {
+    router.refresh();
+  };
+
   return (
-    <div>
+    <div className="flex flex-row gap-2">
       <Button onClick={logoutHandler} disabled={isPending}>
         {isPending ? (
           <Loader className="mr-2 h-4 w-4 animate-spin" />
@@ -26,6 +31,7 @@ function Profile() {
         )}
         Logout
       </Button>
+      <Button onClick={handleRefresh}>Refresh</Button>
     </div>
   );
 }

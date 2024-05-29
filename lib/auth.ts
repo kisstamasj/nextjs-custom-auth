@@ -41,6 +41,7 @@ export async function getProfile() {
     const { data } = await api.get<Profile>("/users/profile");
     return data;
   } catch (error) {
+    // console.log(error);
     return null;
   }
 }
@@ -63,23 +64,15 @@ export async function storeToken(request: StoreTokenRequest) {
   });
 }
 
+export async function getToken() {
+  const accessToken = cookies().get("accessToken")?.value;
+  const refreshToken = cookies().get("refreshToken")?.value;
+  return { accessToken, refreshToken };
+}
+
 export async function removeToken() {
   cookies().delete("accessToken");
   cookies().delete("refreshToken");
-}
-
-export async function getAccessToken() {
-  console.log("getAccessToken");
-  console.log(config.APP_URL);
-  const respone = await fetch(`${config.APP_URL}/api/auth/token`, {
-    method: "GET",
-    headers: {
-      "cache-control": "no-cache",
-    },
-  });
-
-  const data = await respone.json();
-  return data;
 }
 
 export async function signInWithCredentials(
@@ -120,8 +113,8 @@ export async function signOutAction() {
 }
 
 export async function authorized(request: NextRequest) {
-  const accessToken = await getAccessToken();
-  const loggedIn = !!accessToken;
+  const token = await getToken();
+  const loggedIn = !!token?.accessToken;
   const pathName = request.nextUrl.pathname;
   const isAuthRoute = authRoutes.includes(pathName);
 

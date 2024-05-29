@@ -3,7 +3,7 @@
  * @type {string[]}
  */
 export const authRoutes: string[] = [
-  "/auth/signin",
+  "/auth/sign-in",
   "/auth/signup",
   "/auth/error",
 ];
@@ -16,4 +16,4 @@ export const DEFAULT_LOGIN_REDIRECT = "/dashboard";
 /**
  * The default redirect path after logout
  */
-export const DEFAULT_LOGOUT_REDIRECT = "/auth/signin";
+export const DEFAULT_LOGOUT_REDIRECT = "/auth/sign-in";

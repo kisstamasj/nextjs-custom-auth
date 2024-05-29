@@ -39,11 +39,11 @@ export default function AuthCard() {
   });
   const [isPending, startTransition] = useTransition();
 
-  const parser = new UAParser();
+  const ua = new UAParser();
 
   const onSubmit = async (data: AuthSchemaType) => {
     startTransition(async () => {
-      await signInWithCredentials(data, JSON.stringify(parser.getResult()));
+      await signInWithCredentials(data, JSON.stringify(ua.getResult()));
 
       router.push(DEFAULT_LOGIN_REDIRECT);
     });

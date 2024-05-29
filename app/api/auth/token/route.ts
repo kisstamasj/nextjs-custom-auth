@@ -1,13 +1,16 @@
 import { config } from "@/lib/config";
+import { NextApiRequest } from "next";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
-
-export async function GET() {
+export async function GET(request: NextApiRequest) {
   console.log("api/auth/token");
 
   const accessToken = cookies().get("accessToken")?.value;
-  console.log(accessToken);
+  const refreshToken = cookies().get("refreshToken")?.value;
+
+  console.log(accessToken, refreshToken);
+
   const headers = new Headers();
   headers.append("Authorization", `Bearer ${accessToken}`);
 
@@ -17,7 +20,7 @@ export async function GET() {
 
   if (res.status === 401) {
     const refreshPayload = {
-      refreshToken: cookies().get("refreshToken")?.value,
+      refreshToken,
     };
     const res = await fetch(`${config.API_URL}/auth/refresh`, {
       method: "POST",
@@ -29,25 +32,38 @@ export async function GET() {
 
     const jsonData = await res.json();
 
-    cookies().set({
-      name: "accessToken",
-      value: jsonData.accessToken,
-      httpOnly: true,
-      sameSite: "strict",
-      secure: true,
+    console.log("refreshToken res", jsonData);
+
+    if (res.ok) {
+      const response = NextResponse.json({
+        message: "Tokens refreshed successfully",
+      });
+      response.cookies.set("accessToken", jsonData.accessToken, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      });
+
+      response.cookies.set("refreshToken", jsonData.refreshToken, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      });
+
+      return response;
+    }
+
+    const response = NextResponse.json({
+      message: "Tokens refresh not successfully",
     });
 
-    cookies().set({
-      name: "refreshToken",
-      value: jsonData.refreshToken,
-      httpOnly: true,
-      sameSite: "strict",
-      secure: true,
-    });
+    return response;
   }
-  const resData = {
-    accessToken: cookies().get("accessToken")?.value,
-  };
 
-  return Response.json(resData);
+  const response = NextResponse.json({
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+  });
+
+  return response;
 }

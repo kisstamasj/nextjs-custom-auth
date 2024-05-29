@@ -39,7 +39,7 @@ export default function AuthCard() {
   });
   const [isPending, startTransition] = useTransition();
 
-  const parser = useMemo(() => new UAParser(), []);
+  const parser = new UAParser();
 
   const onSubmit = async (data: AuthSchemaType) => {
     startTransition(async () => {

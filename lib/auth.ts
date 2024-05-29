@@ -10,6 +10,7 @@ import api from "./axios";
 import { cookies } from "next/headers";
 import { AuthSchemaType } from "@/schemas/auth";
 import { AxiosError } from "axios";
+import { config } from "./config";
 
 export interface Profile {
   id: string;
@@ -49,16 +50,16 @@ export async function storeToken(request: StoreTokenRequest) {
     name: "accessToken",
     value: request.accessToken,
     httpOnly: true,
-    sameSite: "strict",
-    secure: true,
+    sameSite: "lax",
+    secure: false,
   });
 
   cookies().set({
     name: "refreshToken",
     value: request.refreshToken,
     httpOnly: true,
-    sameSite: "strict",
-    secure: true,
+    sameSite: "lax",
+    secure: false,
   });
 }
 
@@ -67,13 +68,18 @@ export async function removeToken() {
   cookies().delete("refreshToken");
 }
 
-export async function getTokens() {
-  const accessToken = cookies().get("accessToken")?.value;
-  const refreshToken = cookies().get("refreshToken")?.value;
-  if (!accessToken || !refreshToken) {
-    return { accessToken: null, refreshToken: null };
-  }
-  return { accessToken, refreshToken };
+export async function getAccessToken() {
+  console.log("getAccessToken");
+  console.log(config.APP_URL);
+  const respone = await fetch(`${config.APP_URL}/api/auth/token`, {
+    method: "GET",
+    headers: {
+      "cache-control": "no-cache",
+    },
+  });
+  const data = await respone.json();
+  console.log(data);
+  return data;
 }
 
 export async function signInWithCredentials(
@@ -114,7 +120,7 @@ export async function signOutAction() {
 }
 
 export async function authorized(request: NextRequest) {
-  const { accessToken } = await getTokens();
+  const accessToken = await getAccessToken();
   const loggedIn = !!accessToken;
   const pathName = request.nextUrl.pathname;
   const isAuthRoute = authRoutes.includes(pathName);

@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { authorized } from "./lib/auth";
 
 export async function middleware(request: NextRequest) {
-  return await authorized(request);
+  // return await authorized(request);
 }
 
 export const config = {

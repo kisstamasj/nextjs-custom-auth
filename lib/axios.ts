@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { config } from "./config";
-import { getTokens } from "./auth";
+import { getAccessToken } from "./auth";
 
 const api = axios.create({
   baseURL: config.API_URL,
@@ -12,7 +12,9 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-  const { accessToken } = await getTokens();
+  console.log("api.interceptors.request", config.url);
+  if (config.url?.includes("/auth")) return config;
+  const { accessToken } = await getAccessToken();
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }

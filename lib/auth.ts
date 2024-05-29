@@ -50,7 +50,7 @@ export async function storeToken(request: StoreTokenRequest) {
     name: "accessToken",
     value: request.accessToken,
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "strict",
     secure: false,
   });
 
@@ -58,7 +58,7 @@ export async function storeToken(request: StoreTokenRequest) {
     name: "refreshToken",
     value: request.refreshToken,
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "strict",
     secure: false,
   });
 }
@@ -77,8 +77,8 @@ export async function getAccessToken() {
       "cache-control": "no-cache",
     },
   });
+
   const data = await respone.json();
-  console.log(data);
   return data;
 }
 

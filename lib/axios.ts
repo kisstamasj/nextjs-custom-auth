@@ -2,7 +2,6 @@
 
 import axios from "axios";
 import { config } from "./config";
-import { getAccessToken } from "./auth";
 
 const api = axios.create({
   baseURL: config.API_URL,
@@ -14,9 +13,18 @@ const api = axios.create({
 api.interceptors.request.use(async (config) => {
   console.log("api.interceptors.request", config.url);
   if (config.url?.includes("/auth")) return config;
-  const { accessToken } = await getAccessToken();
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+  const respone = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/token`,
+    {
+      method: "GET",
+      cache: "no-store",
+      credentials: "include",
+    }
+  );
+
+  const data = await respone.json();
+  if (data.accessToken) {
+    config.headers.Authorization = `Bearer ${data.accessToken}`;
   }
   return config;
 });

@@ -1,17 +1,21 @@
 import { config } from "@/lib/config";
 import { cookies } from "next/headers";
 
-export async function GET(request: Request) {
+export const dynamic = "force-dynamic";
+
+export async function GET() {
   console.log("api/auth/token");
+
   const accessToken = cookies().get("accessToken")?.value;
+  console.log(accessToken);
   const headers = new Headers();
   headers.append("Authorization", `Bearer ${accessToken}`);
 
-  const response = await fetch(`${config.API_URL}/users/profile`, {
+  const res = await fetch(`${config.API_URL}/users/profile`, {
     headers: headers,
   });
 
-  if (response.status === 401) {
+  if (res.status === 401) {
     const refreshPayload = {
       refreshToken: cookies().get("refreshToken")?.value,
     };
@@ -45,10 +49,5 @@ export async function GET(request: Request) {
     accessToken: cookies().get("accessToken")?.value,
   };
 
-  return new Response(JSON.stringify(resData), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  return Response.json(resData);
 }

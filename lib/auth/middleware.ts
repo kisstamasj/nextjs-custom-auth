@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { LOGIN_PAGE, REDIRECT_AFTER_LOGIN, AUTH_ROUTES } from "../routes-rules";
-import { StoreTokenRequest } from "./auth";
+import { AuthTokens } from "./auth";
 
 export async function authMiddleware(request: NextRequest) {
   let response = NextResponse.next();
@@ -51,7 +51,7 @@ function forceLogout(request: NextRequest) {
   return response;
 }
 
-function storeToken(tokens: StoreTokenRequest, request: NextRequest) {
+function storeToken(tokens: AuthTokens, request: NextRequest) {
   let response = NextResponse.next();
   request.cookies.set("accessToken", tokens.accessToken);
   request.cookies.set("refreshToken", tokens.refreshToken);
@@ -107,7 +107,7 @@ async function refreshTokens(refreshToken: string | undefined) {
       cache: "no-store",
     }
   );
-  const jsonData = (await refreshRes.json()) as StoreTokenRequest;
+  const jsonData = (await refreshRes.json()) as AuthTokens;
 
   if (refreshRes.ok) {
     return jsonData;

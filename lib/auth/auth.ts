@@ -3,9 +3,7 @@
 import { AuthSchemaType } from "@/schemas/auth";
 import { AxiosError } from "axios";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import api from "../axios";
-import { LOGIN_PAGE, REDIRECT_AFTER_LOGIN } from "../routes-rules";
 
 export interface Profile {
   id: string;
@@ -13,7 +11,7 @@ export interface Profile {
   name: string;
 }
 
-export interface StoreTokenRequest {
+export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
 }
@@ -40,10 +38,10 @@ export async function getProfile() {
   }
 }
 
-export async function storeToken(request: StoreTokenRequest) {
+export async function storeToken(tokens: AuthTokens) {
   cookies().set({
     name: "accessToken",
-    value: request.accessToken,
+    value: tokens.accessToken,
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -51,7 +49,7 @@ export async function storeToken(request: StoreTokenRequest) {
 
   cookies().set({
     name: "refreshToken",
-    value: request.refreshToken,
+    value: tokens.refreshToken,
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

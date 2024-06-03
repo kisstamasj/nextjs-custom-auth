@@ -17,11 +17,7 @@ export interface AuthTokens {
 }
 
 export interface SignInResponse {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-  };
+  user: Profile;
   tokens: {
     accessToken: string;
     refreshToken: string;
@@ -90,12 +86,16 @@ export async function signInWithCredentials(
     );
 
     await storeToken(data.tokens);
-
-    return data.user;
+    if (data.user) {
+      return data.user;
+    }
+    return null;
   } catch (error) {
     if (error instanceof AxiosError) {
       console.log(error.response?.data);
     }
+
+    return null;
   }
 }
 

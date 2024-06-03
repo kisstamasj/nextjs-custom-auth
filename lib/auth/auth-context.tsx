@@ -1,17 +1,16 @@
 "use client";
 
+import { AuthSchemaType } from "@/schemas/auth";
+import { useRouter } from "next/navigation";
 import { createContext, useContext, useState, useTransition } from "react";
+import { UAParser } from "ua-parser-js";
+import { LOGIN_PAGE, REDIRECT_AFTER_LOGIN } from "../routes-rules";
 import {
   Profile,
   getProfile,
   signInWithCredentials,
   signOutAction,
 } from "./auth";
-import { UAParser } from "ua-parser-js";
-import { AuthSchemaType } from "@/schemas/auth";
-import api from "../axios";
-import { useRouter } from "next/navigation";
-import { LOGIN_PAGE, REDIRECT_AFTER_LOGIN } from "../routes-rules";
 
 interface IAuthContext {
   profile: Profile | null;
@@ -44,7 +43,11 @@ export const AuthProvider = ({ children, profile }: IAuthProvider) => {
   const signInCredentials = async (data: AuthSchemaType, redirect = true) => {
     startTransition(async () => {
       const ua = new UAParser();
-      await signInWithCredentials(data, JSON.stringify(ua.getResult()));
+      const user = await signInWithCredentials(
+        data,
+        JSON.stringify(ua.getResult())
+      );
+      setStateProfile(user);
       if (redirect) router.push(REDIRECT_AFTER_LOGIN);
     });
   };

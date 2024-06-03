@@ -1,10 +1,9 @@
-import { getProfile } from "@/lib/auth";
+"use client";
+import { useAuth } from "@/lib/auth/auth-context";
 import Profile from "./_components/profile";
 
-export const revalidate = 0;
-
-async function Dashboard() {
-  const profile = await getProfile();
+function Dashboard() {
+  const { profile } = useAuth();
 
   return (
     <div>

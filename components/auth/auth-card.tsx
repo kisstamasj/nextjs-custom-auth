@@ -1,12 +1,12 @@
 "use client";
 
+import { REDIRECT_AFTER_LOGIN } from "@/lib/routes-rules";
 import { AuthSchemaType, authSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useTransition } from "react";
+import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { UAParser } from "ua-parser-js";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -25,11 +25,11 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { DEFAULT_LOGIN_REDIRECT } from "@/lib/routes-rules";
-import { signInWithCredentials } from "@/lib/auth";
+import { useAuth } from "@/lib/auth/auth-context";
 
 export default function AuthCard() {
   const router = useRouter();
+  const { signInCredentials, isLoading: isPending } = useAuth();
   const form = useForm<AuthSchemaType>({
     resolver: zodResolver(authSchema),
     defaultValues: {
@@ -37,16 +37,9 @@ export default function AuthCard() {
       password: "",
     },
   });
-  const [isPending, startTransition] = useTransition();
-
-  const ua = new UAParser();
 
   const onSubmit = async (data: AuthSchemaType) => {
-    startTransition(async () => {
-      await signInWithCredentials(data, JSON.stringify(ua.getResult()));
-
-      router.push(DEFAULT_LOGIN_REDIRECT);
-    });
+    signInCredentials(data);
   };
 
   return (

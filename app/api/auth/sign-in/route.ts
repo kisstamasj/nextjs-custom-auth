@@ -1,4 +1,4 @@
-import { SignInResponse } from "@/lib/auth";
+import { SignInResponse } from "@/lib/auth/auth";
 import api from "@/lib/axios";
 import { NextResponse, userAgent } from "next/server";
 

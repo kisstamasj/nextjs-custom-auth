@@ -1,16 +1,11 @@
 "use server";
 
-import { NextRequest, NextResponse } from "next/server";
-import {
-  DEFAULT_LOGIN_REDIRECT,
-  DEFAULT_LOGOUT_REDIRECT,
-  authRoutes,
-} from "./routes-rules";
-import api from "./axios";
-import { cookies } from "next/headers";
 import { AuthSchemaType } from "@/schemas/auth";
 import { AxiosError } from "axios";
-import { config } from "./config";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import api from "../axios";
+import { LOGIN_PAGE, REDIRECT_AFTER_LOGIN } from "../routes-rules";
 
 export interface Profile {
   id: string;
@@ -41,7 +36,6 @@ export async function getProfile() {
     const { data } = await api.get<Profile>("/users/profile");
     return data;
   } catch (error) {
-    // console.log(error);
     return null;
   }
 }
@@ -51,22 +45,25 @@ export async function storeToken(request: StoreTokenRequest) {
     name: "accessToken",
     value: request.accessToken,
     httpOnly: true,
-    sameSite: "strict",
-    secure: false,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
   });
 
   cookies().set({
     name: "refreshToken",
     value: request.refreshToken,
     httpOnly: true,
-    sameSite: "strict",
-    secure: false,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
   });
 }
 
-export async function getToken() {
+export async function getTokens() {
   const accessToken = cookies().get("accessToken")?.value;
   const refreshToken = cookies().get("refreshToken")?.value;
+  if (!accessToken || !refreshToken) {
+    return null;
+  }
   return { accessToken, refreshToken };
 }
 
@@ -110,21 +107,4 @@ export async function signOutAction() {
   } catch (error) {}
 
   await removeToken();
-}
-
-export async function authorized(request: NextRequest) {
-  const token = await getToken();
-  const loggedIn = !!token?.accessToken;
-  const pathName = request.nextUrl.pathname;
-  const isAuthRoute = authRoutes.includes(pathName);
-
-  if (!loggedIn && !isAuthRoute) {
-    return NextResponse.redirect(new URL(DEFAULT_LOGOUT_REDIRECT, request.url));
-  }
-
-  if (loggedIn && isAuthRoute) {
-    return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, request.url));
-  }
-
-  return NextResponse.next();
 }

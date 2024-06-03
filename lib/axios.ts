@@ -1,8 +1,6 @@
-"use server";
-
 import axios from "axios";
+import { getTokens } from "./auth/auth";
 import { config } from "./config";
-import { getToken } from "./auth";
 
 const api = axios.create({
   baseURL: config.API_URL,
@@ -12,9 +10,9 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (c) => {
-  if (c.url?.includes("/auth")) return c;
-  const token = await getToken();
-  if (token?.accessToken) {
+  const token = await getTokens();
+
+  if (token && token?.accessToken) {
     c.headers.Authorization = `Bearer ${token.accessToken}`;
   }
 

@@ -2,7 +2,7 @@
  * An array of routes that used for authentication
  * @type {string[]}
  */
-export const authRoutes: string[] = [
+export const AUTH_ROUTES: string[] = [
   "/auth/sign-in",
   "/auth/signup",
   "/auth/error",
@@ -11,9 +11,9 @@ export const authRoutes: string[] = [
 /**
  * The default redirect path after login
  */
-export const DEFAULT_LOGIN_REDIRECT = "/dashboard";
+export const REDIRECT_AFTER_LOGIN = "/dashboard";
 
 /**
  * The default redirect path after logout
  */
-export const DEFAULT_LOGOUT_REDIRECT = "/auth/sign-in";
+export const LOGIN_PAGE = "/auth/sign-in";

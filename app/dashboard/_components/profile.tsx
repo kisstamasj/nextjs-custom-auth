@@ -1,24 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { signOutAction } from "@/lib/auth";
-import { DEFAULT_LOGOUT_REDIRECT } from "@/lib/routes-rules";
+import { useAuth } from "@/lib/auth/auth-context";
 import { Loader, LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import Link from "next/link";
 
 function Profile() {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const logoutHandler = async () => {
-    startTransition(async () => {
-      await signOutAction();
-      router.push(DEFAULT_LOGOUT_REDIRECT);
-    });
-  };
+  const { isLoading: isPending, signOut } = useAuth();
 
-  const handleRefresh = async () => {
-    router.refresh();
+  const logoutHandler = async () => {
+    signOut();
   };
 
   return (
@@ -31,7 +22,9 @@ function Profile() {
         )}
         Logout
       </Button>
-      <Button onClick={handleRefresh}>Refresh</Button>
+      <Button asChild>
+        <Link href="/dashboard/about"> About</Link>
+      </Button>
     </div>
   );
 }

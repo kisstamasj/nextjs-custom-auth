@@ -4,12 +4,14 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function GET(request: NextApiRequest) {
-  console.log("api/auth/token");
-
   const accessToken = cookies().get("accessToken")?.value;
   const refreshToken = cookies().get("refreshToken")?.value;
 
-  console.log(accessToken, refreshToken);
+  if (!accessToken || !refreshToken) {
+    return NextResponse.json({
+      message: "Unauthorized",
+    });
+  }
 
   const headers = new Headers();
   headers.append("Authorization", `Bearer ${accessToken}`);
@@ -19,24 +21,21 @@ export async function GET(request: NextApiRequest) {
   });
 
   if (res.status === 401) {
-    const refreshPayload = {
-      refreshToken,
-    };
+    console.log("refreshing token");
     const res = await fetch(`${config.API_URL}/auth/refresh`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${refreshPayload.refreshToken}`,
+        Authorization: `Bearer ${refreshToken}`,
       },
     });
 
     const jsonData = await res.json();
 
-    console.log("refreshToken res", jsonData);
-
     if (res.ok) {
       const response = NextResponse.json({
-        message: "Tokens refreshed successfully",
+        accessToken: jsonData.accessToken,
+        refreshToken: jsonData.refreshToken,
       });
       response.cookies.set("accessToken", jsonData.accessToken, {
         httpOnly: true,
@@ -50,12 +49,17 @@ export async function GET(request: NextApiRequest) {
         secure: process.env.NODE_ENV === "production",
       });
 
+      console.log("Tokens refresh successfully");
+
       return response;
     }
 
     const response = NextResponse.json({
       message: "Tokens refresh not successfully",
     });
+
+    response.cookies.delete("accessToken");
+    response.cookies.delete("refreshToken");
 
     return response;
   }

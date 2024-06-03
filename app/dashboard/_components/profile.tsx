@@ -6,7 +6,7 @@ import { Loader, LogOut } from "lucide-react";
 import Link from "next/link";
 
 function Profile() {
-  const { isLoading: isPending, signOut } = useAuth();
+  const { isLoading: isPending, signOut, refresh } = useAuth();
 
   const logoutHandler = async () => {
     signOut();
@@ -25,6 +25,7 @@ function Profile() {
       <Button asChild>
         <Link href="/dashboard/about"> About</Link>
       </Button>
+      <Button onClick={refresh}>Refresh session</Button>
     </div>
   );
 }

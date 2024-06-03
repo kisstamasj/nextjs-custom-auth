@@ -1,7 +1,12 @@
 "use client";
 
 import { createContext, useContext, useState, useTransition } from "react";
-import { Profile, signInWithCredentials, signOutAction } from "./auth";
+import {
+  Profile,
+  getProfile,
+  signInWithCredentials,
+  signOutAction,
+} from "./auth";
 import { UAParser } from "ua-parser-js";
 import { AuthSchemaType } from "@/schemas/auth";
 import api from "../axios";
@@ -54,8 +59,8 @@ export const AuthProvider = ({ children, profile }: IAuthProvider) => {
   const refresh = async () => {
     startTransition(async () => {
       try {
-        const profile = await api.get("/users/profile");
-        setStateProfile(profile.data);
+        const profile = await getProfile();
+        setStateProfile(profile);
       } catch (error) {
         setStateProfile(null);
         console.error(error);

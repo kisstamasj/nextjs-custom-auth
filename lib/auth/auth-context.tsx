@@ -14,7 +14,11 @@ import {
 
 interface IAuthContext {
   profile: Profile | null;
-  signInCredentials: (data: AuthSchemaType) => Promise<void>;
+  signInCredentials: (
+    data: AuthSchemaType,
+    redirect?: boolean,
+    redirectUrl?: string
+  ) => Promise<void>;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
   isLoading: boolean;
@@ -40,7 +44,11 @@ export const AuthProvider = ({ children, profile }: IAuthProvider) => {
   const router = useRouter();
   const [stateProfile, setStateProfile] = useState<Profile | null>(profile);
   const [isPending, startTransition] = useTransition();
-  const signInCredentials = async (data: AuthSchemaType, redirect = true) => {
+  const signInCredentials = async (
+    data: AuthSchemaType,
+    redirect = true,
+    redirectUrl?: string
+  ) => {
     startTransition(async () => {
       const ua = new UAParser();
       const user = await signInWithCredentials(
@@ -48,7 +56,7 @@ export const AuthProvider = ({ children, profile }: IAuthProvider) => {
         JSON.stringify(ua.getResult())
       );
       setStateProfile(user);
-      if (redirect) router.push(REDIRECT_AFTER_LOGIN);
+      if (redirect) router.push(redirectUrl || REDIRECT_AFTER_LOGIN);
     });
   };
 

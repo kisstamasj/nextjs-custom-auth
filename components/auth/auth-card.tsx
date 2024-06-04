@@ -1,11 +1,10 @@
 "use client";
 
-import { REDIRECT_AFTER_LOGIN } from "@/lib/routes-rules";
+import { useAuth } from "@/lib/auth/auth-context";
 import { AuthSchemaType, authSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import {
@@ -25,7 +24,6 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { useAuth } from "@/lib/auth/auth-context";
 
 export default function AuthCard() {
   const router = useRouter();
